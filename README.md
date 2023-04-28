@@ -12,9 +12,17 @@ pnpm i
 
 ### Start development server
 
+## Without docker
+
 ```bash
 pnpm dev
 ```
+
+## With docker
+
+```bash
+docker compose up
+``` 
 
 ### Test
 

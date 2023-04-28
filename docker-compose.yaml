@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  app:
+    image: node:18-alpine
+    command: sh -c "apk add opus-tools && npm install -g pnpm && pnpm i && pnpm dev"
+    env_file:
+      - .env
+    ports:
+      - '${PORT}:${PORT}'
+    working_dir: /app
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - sangeet-db-data:$PG_DOCKER_VOLUME
+
+volumes:
+  sangeet-db-data:
