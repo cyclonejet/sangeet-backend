@@ -10,11 +10,17 @@ dependencies:
   express:
     specifier: ^4.18.2
     version: 4.18.2
+  http-errors:
+    specifier: ^2.0.0
+    version: 2.0.0
 
 devDependencies:
   '@types/express':
     specifier: ^4.17.17
     version: 4.17.17
+  '@types/http-errors':
+    specifier: ^2.0.1
+    version: 2.0.1
   '@types/jest':
     specifier: ^29.5.1
     version: 29.5.1
@@ -765,6 +771,10 @@ packages:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
     dependencies:
       '@types/node': 18.16.1
+    dev: true
+
+  /@types/http-errors@2.0.1:
+    resolution: {integrity: sha512-/K3ds8TRAfBvi5vfjuz8y6+GiAYBZ0x4tXv1Av6CWBWn0IlADc+ZX9pMq7oU0fNQPnBwIZl3rmeLp6SBApbxSQ==}
     dev: true
 
   /@types/istanbul-lib-coverage@2.0.4:
