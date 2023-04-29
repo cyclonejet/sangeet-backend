@@ -2,6 +2,7 @@ import app from '../app';
 import http from 'http';
 import dotenv from 'dotenv';
 import { AddressInfo } from 'net';
+import { initializeDb } from './initializeDB';
 
 dotenv.config();
 
@@ -11,6 +12,9 @@ const port: string | number | boolean = normalizePort(
 app.set('port', port);
 
 const server: http.Server = http.createServer(app);
+
+initializeDb();
+
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
