@@ -38,4 +38,13 @@ export const initializeDb = async () => {
   } catch (error) {
     console.log('Unable to connect to the database.', error);
   }
+
+  try {
+    await sequelize.sync({
+      force: false,
+      alter: false,
+    });
+  } catch (error: any) {
+    console.log('Error syncing database.', error.message);
+  }
 };

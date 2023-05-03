@@ -1,0 +1,10 @@
+### Create a new user
+POST http://localhost:1337/api/users/signup
+Content-Type: application/json
+
+{
+  "username": "daycare123",
+  "email": "daycare123@pm.me",
+  "password": "daycare123",
+  "passwordConfirmation": "daycare123"
+}

@@ -1,9 +1,12 @@
 import express, { NextFunction, Request, Response } from 'express';
+import bodyParser from 'body-parser';
 import { HttpError } from 'http-errors';
 
 import routes from './routes';
 
 var app = express();
+
+app.use(bodyParser.json());
 
 routes(app);
 
