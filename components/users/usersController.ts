@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import createError from 'http-errors';
 import { UniqueConstraintError } from 'sequelize';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import { CreateUserInput } from './usersSchema';
 import User from './usersModel';
@@ -29,11 +30,28 @@ export const signup = async (
       password: hash,
     });
 
+    let token;
+    const { SECRET_KEY } = process.env;
+    if (!SECRET_KEY) {
+      throw new Error('SECRET_KEY not found.');
+    }
+    try {
+      token = jwt.sign(
+        {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        },
+        SECRET_KEY
+      );
+    } catch (err) {
+      return next(createError(500, 'Signup failed.'));
+    }
+
     res.status(201).json({
       message: 'User created.',
       data: {
-        username,
-        email,
+        token,
         id: user.id,
         preference: user.preference,
       },
