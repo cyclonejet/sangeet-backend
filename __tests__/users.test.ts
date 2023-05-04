@@ -5,12 +5,18 @@ import { initializeDb, sequelize } from '../bin/initializeDB';
 import User from '../components/users/usersModel';
 
 const USER_SIGNUP_ROUTE = '/api/users/signup';
+const USER_SIGNIN_ROUTE = '/api/users/signin';
 
 const userInput = {
   email: 'test123456@pm.me',
   password: 'test123456',
   passwordConfirmation: 'test123456',
   username: 'test123456',
+};
+
+const userSigninInput = {
+  email: 'test123456@pm.me',
+  password: 'test123456',
 };
 
 const userPayload = {
@@ -143,13 +149,12 @@ describe('user', () => {
           expect(statusCode).toBe(201);
           expect(body.message).toBe('User created.');
           expect(body.data.preference).toBe('opus');
+          expect(body.data.token).not.toBeNull();
         });
       });
 
       describe('if user with same email exists', () => {
         it('should return 409, UniqueConstraintError', async () => {
-          await supertest(app).post(USER_SIGNUP_ROUTE).send(userInput);
-
           const { statusCode, body } = await supertest(app)
             .post(USER_SIGNUP_ROUTE)
             .send({ ...userInput, username: 'somediffusername' });
@@ -163,8 +168,6 @@ describe('user', () => {
 
       describe('if user with same username exists', () => {
         it('should return 409, UniqueConstraintError', async () => {
-          await supertest(app).post(USER_SIGNUP_ROUTE).send(userInput);
-
           const { statusCode, body } = await supertest(app)
             .post(USER_SIGNUP_ROUTE)
             .send({ ...userInput, email: 'somediffusername@pm.me' });
@@ -178,7 +181,91 @@ describe('user', () => {
 
       afterAll(async () => {
         await User.truncate();
-        await sequelize.close();
+      });
+    });
+  });
+
+  describe('signin user', () => {
+    describe('validator tests', () => {
+      describe('if email is not provided', () => {
+        it('should return 400', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNIN_ROUTE)
+            .send({ password: userSigninInput.password });
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe('Email is required.');
+        });
+      });
+
+      describe('if email is invalid', () => {
+        it('should return 400', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNIN_ROUTE)
+            .send({ ...userSigninInput, email: 'invalidemail' });
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe('Invalid email.');
+        });
+      });
+
+      describe('if password is not provided', () => {
+        it('should return 400', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNIN_ROUTE)
+            .send({ email: userSigninInput.email });
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe('Password is required.');
+        });
+      });
+    });
+
+    describe('databse tests', () => {
+      beforeAll(() => {
+        initializeDb();
+      });
+
+      describe('if user with an account signs in successfully', () => {
+        it('should return 200', async () => {
+          await supertest(app).post(USER_SIGNUP_ROUTE).send(userInput);
+
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNIN_ROUTE)
+            .send(userSigninInput);
+
+          expect(statusCode).toBe(200);
+          expect(body.token).not.toBeNull();
+          expect(body.id).not.toBeNull();
+          expect(body.preference).toBe('opus');
+        });
+      });
+
+      describe("if user with given email doesn't exist", () => {
+        it('should return 401', async () => {
+          const WRONG_EMAIL = 'hahahah@pm.me';
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNIN_ROUTE)
+            .send({ ...userSigninInput, email: WRONG_EMAIL });
+
+          expect(statusCode).toBe(401);
+          expect(body.message).toBe(`No user with email ${WRONG_EMAIL}`);
+        });
+      });
+
+      describe("if password doesn't match", () => {
+        it('should return 401', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNIN_ROUTE)
+            .send({ ...userSigninInput, password: 'olololololo' });
+          expect(statusCode).toBe(401);
+          expect(body.message).toBe(
+            `Wrong password for ${userSigninInput.email}`
+          );
+        });
+      });
+
+      afterAll(async () => {
+        await User.truncate();
       });
     });
   });

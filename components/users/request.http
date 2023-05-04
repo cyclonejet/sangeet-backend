@@ -8,3 +8,12 @@ Content-Type: application/json
   "password": "daycare123",
   "passwordConfirmation": "daycare123"
 }
+
+### Signin user
+POST http://localhost:1337/api/users/signin
+Content-Type: application/json
+
+{
+  "email": "daycare123@pm.me",
+  "password": "daycare123"
+}
