@@ -141,7 +141,9 @@ describe('user', () => {
             .send(userInput);
 
           expect(statusCode).toBe(201);
-          expect(body).toMatchObject(userPayload);
+          expect(body.message).toBe('User created.');
+          expect(body.data.username).toBe(userPayload.data.username);
+          expect(body.data.email).toBe(userPayload.data.email);
         });
       });
 

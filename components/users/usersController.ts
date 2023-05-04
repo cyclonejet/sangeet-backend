@@ -30,10 +30,12 @@ export const signup = async (
     });
 
     res.status(201).json({
-      message: 'User created',
+      message: 'User created.',
       data: {
         username,
         email,
+        id: user.id,
+        preference: user.preference,
       },
     });
   } catch (error: any) {

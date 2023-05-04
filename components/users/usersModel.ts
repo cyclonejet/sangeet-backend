@@ -1,7 +1,41 @@
-import { DataTypes } from 'sequelize';
+import {
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../../bin/initializeDB';
 
-const User = sequelize.define('User', {
+interface UserType
+  extends Model<
+    InferAttributes<UserType>,
+    InferCreationAttributes<
+      UserType,
+      {
+        omit:
+          | 'id'
+          | 'profilePicture'
+          | 'liked'
+          | 'createdPlaylists'
+          | 'followedPlaylists'
+          | 'followedArtists'
+          | 'preference';
+      }
+    >
+  > {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  profilePicture: string;
+  liked: string[];
+  createdPlaylists: string[];
+  followedPlaylists: string[];
+  followedArtists: string[];
+  preference: 'opus' | 'flac';
+}
+
+const User = sequelize.define<UserType>('User', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -41,6 +75,10 @@ const User = sequelize.define('User', {
   followedArtists: {
     type: DataTypes.ARRAY(DataTypes.CHAR),
     defaultValue: [],
+  },
+  preference: {
+    type: DataTypes.CHAR(4),
+    defaultValue: 'opus',
   },
 });
 
