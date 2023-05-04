@@ -1,6 +1,8 @@
 import supertest from 'supertest';
 import app from '../app';
 import * as UsersController from '../components/users/usersController';
+import { initializeDb, sequelize } from '../bin/initializeDB';
+import User from '../components/users/usersModel';
 
 const USER_SIGNUP_ROUTE = '/api/users/signup';
 
@@ -124,6 +126,58 @@ describe('user', () => {
           expect(statusCode).toBe(400);
           expect(body.message).toBe('Password should be minimum 8 characters.');
         });
+      });
+    });
+
+    describe('database tests', () => {
+      beforeAll(() => {
+        initializeDb();
+      });
+
+      describe('successful user creation', () => {
+        it('should return 201', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNUP_ROUTE)
+            .send(userInput);
+
+          expect(statusCode).toBe(201);
+          expect(body).toMatchObject(userPayload);
+        });
+      });
+
+      describe('if user with same email exists', () => {
+        it('should return 409, UniqueConstraintError', async () => {
+          await supertest(app).post(USER_SIGNUP_ROUTE).send(userInput);
+
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNUP_ROUTE)
+            .send({ ...userInput, username: 'somediffusername' });
+
+          expect(statusCode).toBe(409);
+          expect(body).toMatchObject({
+            message: 'User with given email already exists.',
+          });
+        });
+      });
+
+      describe('if user with same username exists', () => {
+        it('should return 409, UniqueConstraintError', async () => {
+          await supertest(app).post(USER_SIGNUP_ROUTE).send(userInput);
+
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNUP_ROUTE)
+            .send({ ...userInput, email: 'somediffusername@pm.me' });
+
+          expect(statusCode).toBe(409);
+          expect(body).toMatchObject({
+            message: 'User with given username already exists.',
+          });
+        });
+      });
+
+      afterAll(async () => {
+        await User.truncate();
+        await sequelize.close();
       });
     });
   });

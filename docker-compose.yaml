@@ -3,7 +3,7 @@ version: '3.9'
 services:
   app:
     image: node:18-alpine
-    command: sh -c "apk add opus-tools && npm install -g pnpm && pnpm i && pnpm dev"
+    command: sh -c "apk add opus-tools git && git config --global --add safe.directory /app && npm install -g pnpm && pnpm i && pnpm dev"
     env_file:
       - .env
     ports:
