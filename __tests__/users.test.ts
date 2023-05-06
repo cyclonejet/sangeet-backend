@@ -179,6 +179,40 @@ describe('user', () => {
         });
       });
 
+      describe('email case sensitivity', () => {
+        it('should return 409, UniqueConstraintError', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNUP_ROUTE)
+            .send({
+              ...userInput,
+              username: 'somediffusername',
+              email: userInput.email.toUpperCase(),
+            });
+
+          expect(statusCode).toBe(409);
+          expect(body).toMatchObject({
+            message: 'User with given email already exists.',
+          });
+        });
+      });
+
+      describe('username case sensitivity', () => {
+        it('should return 409, UniqueConstraintError', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNUP_ROUTE)
+            .send({
+              ...userInput,
+              username: userInput.username.toUpperCase(),
+              email: 'somediffemail@pm.mee',
+            });
+
+          expect(statusCode).toBe(409);
+          expect(body).toMatchObject({
+            message: 'User with given username already exists.',
+          });
+        });
+      });
+
       afterAll(async () => {
         await User.truncate();
       });

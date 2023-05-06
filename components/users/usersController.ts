@@ -44,8 +44,8 @@ export const signup = async (
     const hash = bcrypt.hashSync(password, salt);
 
     const user = await User.create({
-      username,
-      email,
+      username: username.toLowerCase(),
+      email: email.toLowerCase(),
       password: hash,
     });
 
