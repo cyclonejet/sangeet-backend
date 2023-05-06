@@ -93,7 +93,7 @@ export const signin = async (
   try {
     user = await User.findOne({ where: { email } });
     if (!user) {
-      return next(createError(401, { message: `No user with email ${email}` }));
+      return next(createError(401, { message: `Invalid credentials.` }));
     }
   } catch (err) {
     return next(createError(500, 'Signin failed.'));
@@ -105,7 +105,7 @@ export const signin = async (
     let dbPassword = user.password.replace(/ /g, '');
     isPasswordCorrect = bcrypt.compareSync(password, dbPassword);
     if (!isPasswordCorrect) {
-      return next(createError(401, { message: `Wrong password for ${email}` }));
+      return next(createError(401, { message: `Invalid credentials.` }));
     }
   } catch (err) {
     return next(createError(500, 'Signin failed.'));

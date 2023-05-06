@@ -248,7 +248,7 @@ describe('user', () => {
             .send({ ...userSigninInput, email: WRONG_EMAIL });
 
           expect(statusCode).toBe(401);
-          expect(body.message).toBe(`No user with email ${WRONG_EMAIL}`);
+          expect(body.message).toBe(`Invalid credentials.`);
         });
       });
 
@@ -258,9 +258,7 @@ describe('user', () => {
             .post(USER_SIGNIN_ROUTE)
             .send({ ...userSigninInput, password: 'olololololo' });
           expect(statusCode).toBe(401);
-          expect(body.message).toBe(
-            `Wrong password for ${userSigninInput.email}`
-          );
+          expect(body.message).toBe(`Invalid credentials.`);
         });
       });
 
