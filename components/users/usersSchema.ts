@@ -7,7 +7,9 @@ export const createUsersSchema = object({
     }).min(6, 'Username should be minimum 6 characters.'),
     password: string({
       required_error: 'Password is required.',
-    }).min(8, 'Password should be minimum 8 characters.'),
+    })
+      .min(8, 'Password should be minimum 8 characters.')
+      .max(64, 'Password should be maximum 64 characters.'),
     passwordConfirmation: string({
       required_error: 'Confirm password is required.',
     }),

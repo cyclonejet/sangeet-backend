@@ -133,6 +133,19 @@ describe('user', () => {
           expect(body.message).toBe('Password should be minimum 8 characters.');
         });
       });
+
+      describe('if password length is too long', () => {
+        it('should return 400', async () => {
+          const { statusCode, body } = await supertest(app)
+            .post(USER_SIGNUP_ROUTE)
+            .send({ ...userInput, password: 'p'.repeat(69) });
+
+          expect(statusCode).toBe(400);
+          expect(body.message).toBe(
+            'Password should be maximum 64 characters.'
+          );
+        });
+      });
     });
 
     describe('database tests', () => {
